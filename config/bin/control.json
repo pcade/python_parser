@@ -1,0 +1,83 @@
+{
+    "id": "",
+    "log": {
+        "console": {
+            "level": 0,
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "file": {
+            "level": 2,
+            "max_index": 10,
+            "max_size": 10485760,
+            "name": "../log/control.log",
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "syslog": {
+            "facility": "user",
+            "host": "localhost",
+            "ident": "access",
+            "level": 0,
+            "pattern": "%m%n",
+            "port": 514
+        }
+    },
+    "name": "control",
+    "subsystems": [
+        {
+            "name": "control",
+            "properties": {
+                "acl_file": "../etc/acl/control.acl.json",
+                "abac_file": "../etc/acl/abac.control.json",
+                "dbms_string": "$file{control_string.property}",
+                "find_query_path": "./plugins/libfindquery_control",
+                "json_query_path": "../etc/query",
+                "json_schema_path" : "../etc/schemas",
+                "validate_by_schema": false,
+                "classifier": {
+                    "path": [
+                        "../etc/classifiers/global",
+                        "../etc/classifiers/local",
+                        "../etc/classifiers/system"
+                    ],
+                    "required": [
+                        "users",
+                        "posts",
+                        "roles",
+                        "subdivisions",
+                        "control_circuit",
+                        "control"
+                    ]
+                },
+                "metrics": "0.0.0.0:32603",
+                "threads": 10,
+                "circuit": "",
+                "schema_name": "a150d13f-80f4-4a51-a7a5-4727a846743e"
+            },
+            "transport": [
+                {
+                    "lm": "O1$$",
+                    "queue": "CONTROL_226",
+                    "threads": 10,
+                    "type": "broker",
+                    "uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)",
+                    "use": true
+                },
+                {
+                    "host": "0.0.0.0",
+                    "port": 22603,
+                    "threads": 10,
+                    "timeout": 30000,
+                    "type": "tcp",
+                    "use": true,
+                    "ssl": {
+                        "use": false,
+                        "cert_file_path": "",
+                        "key_file_path": "",
+                        "ca_file_path": ""
+                    }
+                }
+            ],
+            "type": "ControlServer"
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "cfg_loader",
+  "log": {
+      "console": {
+          "level": 0,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n"
+      },
+      "file": {
+          "level": 2,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n",
+          "name": "cfg_loader.log",
+          "max_size": 1048576,
+          "max_index": 3
+      },
+      "syslog": {
+          "level": 0,
+          "pattern": "%m%n",
+          "host": "localhost",
+          "port": 514,
+          "ident": "cfg_loader",
+          "facility": "user"
+      }
+  },
+  "subsystems": [
+      {
+          "name": "cfg_loader",
+          "properties": {
+              "config": "cfg_loader",
+              "profile": "service",
+              "period": 0
+          },
+          "transport": [
+              {
+                  "type": "tcp",
+                  "host": "127.0.0.1",
+                  "port": 22611,
+                  "timeout": 30000,
+                  "ssl" : {
+                      "use" : false,
+                      "cert_file_path": "",
+                      "key_file_path": "",
+                      "ca_file_path": ""
+                  }
+              }
+          ]
+      }
+  ]
+}

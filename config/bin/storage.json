@@ -1,0 +1,63 @@
+{
+    "id": "",
+    "log": {
+        "console": {
+            "level": 0,
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "file": {
+            "level": 2,
+            "max_index": 10,
+            "max_size": 10485760,
+            "name": "../log/storage.log",
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "syslog": {
+            "facility": "user",
+            "host": "localhost",
+            "ident": "docstorage",
+            "level": 0,
+            "pattern": "%m%n",
+            "port": 514
+        }
+    },
+    "name": "storage",
+    "subsystems": [
+        {
+            "name": "storage",
+            "properties": {
+                "acl_file": "",
+                "dbms_string": "$file{meta_string.property}",
+                "find_query_path": "",
+                "json_query_path": "../etc/query",
+                "metrics": "0.0.0.0:32607",
+                "threads": 10
+            },
+            "transport": [
+                {
+                    "lm": "O1$$",
+                    "queue": "STORAGE_226",
+                    "threads": 10,
+                    "type": "broker",
+                    "uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)",
+                    "use": true
+                },
+                {
+                    "host": "0.0.0.0",
+                    "port": 22607,
+                    "threads": 10,
+                    "timeout": 30000,
+                    "type": "tcp",
+                    "use": true,
+                    "ssl" : {
+                        "use" : false,
+                        "cert_file_path": "",
+                        "key_file_path": "",
+                        "ca_file_path": ""
+                    }
+                }
+            ],
+            "type": "StorageServer"
+        }
+    ]
+}

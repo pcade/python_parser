@@ -1,0 +1,154 @@
+{
+  "id": "ptgw",
+  "name": "postgw",
+  "log": {
+      "console": {
+          "level": 6,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n"
+      },
+      "file": {
+          "level": 6,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n",
+          "name": "../log/postgw.log",
+          "max_size": 1048576,
+          "max_index": 3
+      },
+      "syslog": {
+          "level": 0,
+          "pattern": "%m%n",
+          "host": "localhost",
+          "port": 514,
+          "ident": "postgw",
+          "facility": "user"
+      }
+  },
+  "subsystems": [
+      {
+          "type": "swf::pgw::Server",
+          "name": "server",
+          "properties": {
+              "acl_file": "../etc/acl/postgw.acl.json",
+              "json_query_path": "../etc/query",
+              "classifier":{
+                  "path" : [ "../etc/classifiers/global","../etc/classifiers/local","../etc/classifiers/system"],
+                  "required" : [ "users", "subdivisions"]
+              },
+              "threads": 0,
+              "dbms_string": "$file{meta_string.property}",
+              "notifier": {
+                  "schema": "notifier",
+                  "connection_restore_timeout": 15,
+                  "poll_period": 1,
+                  "pg_notify": false,
+                  "source": "POSTGW_IN",
+                  "trace": true
+              },
+              "schema": "postgw",
+              "preparer_threads": 1,
+              "sender_threads": 1,
+              "send_retry_timeout": 180,
+              "send_retry_poll_period": 30,
+              "ftp": {
+                  "host": "127.0.0.1",
+                  "port": 22608,
+                  "root_path": "",
+                  "username": "",
+                  "password": "",
+                  "server_id": "6255e60b-b198-4cc9-96ea-22d4259e7b4a"
+              },
+              "journal": {
+                  "backup_path": "./jrnl_backup"
+              },
+              "modules": {
+                  "paths": ["./postgw_plugins"],
+                  "bindings": [
+                      {
+                          "send_type": "doka_medo",
+                          "type": "swf::pgw::medo::Module",
+                          "name": "medo",
+                          "config": {
+                              "in_scan_period": 15,
+                              "in": "./medo/in",
+                              "in_error": "./medo/in_error",
+                              "in_archive": "./medo/in_archive",
+                              "in_redir_copy": "./medo/in_redir_copy",
+                              "out": "./medo/out",
+                              "out_archive": "./medo/out_archive",
+                              "tmp": "./medo/tmp",
+                              "addressees": "../etc/postgw/medo/addressees.json",
+                              "redirections": "../etc/postgw/medo/redirections.json",
+                              "organization": "../etc/postgw/medo/organization.json",
+                              "doc_type_classifier": "../etc/postgw/medo/cl_doctype.json",
+                              "region_classifier": "../etc/postgw/medo/cl_regions.json",
+                              "secrecy_classifier": "../etc/postgw/medo/cl_secrecy.json",
+                              "cryptowrapper_lib": "../../cryptowrapper/libcryptowrapper.so",
+                              "cryptowrapper_ini": "../../cryptowrapper/cryptowrapper.xml",
+                              "validate_signatures" : true,
+                              "schemas": [
+                                  "../etc/postgw/medo/medo22.xsd",
+                                  "../etc/postgw/medo/medo27.xsd",
+                                  "../etc/postgw/medo/medo271.xsd",
+                                  "../etc/postgw/medo/container.xsd",
+                                  "../etc/postgw/medo/container271.xsd"
+                              ]
+                          }
+                      },
+                      {
+                          "send_type": "doka_sed",
+                          "type": "swf::pgw::mail::Module",
+                          "name": "mail",
+                          "config": {
+                              "addr_path": "../etc/postgw/mail/addr.json",
+                              "login": "test.mailbox.03@inbox.ru",
+                              "password": "mail0003",
+                              "poll_period": 60,
+                              "pop3": {
+                                  "host": "pop.mail.ru",
+                                  "port": 995,
+                                  "timeout": 10
+                              },
+                              "smtp": {
+                                  "host": "smtp.mail.ru",
+                                  "port": 465,
+                                  "timeout": 5
+                              }
+                          }
+                      },
+                      {
+                          "send_type": "u_to_u",
+                          "type": "swf::pgw::plot::Module",
+                          "name": "plot",
+                          "config": {
+                              "plot_name": "ptgw"
+                          }
+                      }
+                  ]
+              }
+          },
+          "transport": [
+              {
+                  "use": false,
+                  "type": "broker",
+                  "queue": "POSTGW_RPC",
+                  "uri": "tcp://127.0.0.1:12345?transport.trace=false",
+                  "lm": "O1$$",
+                  "threads": 10
+              },
+              {
+                  "use": false,
+                  "type": "tcp",
+                  "host": "0.0.0.0",
+                  "port": 8866,
+                  "timeout": 30000,
+                  "threads": 10,
+                  "ssl" : {
+                      "use" : false,
+                      "cert_file_path": "",
+                      "key_file_path": "",
+                      "ca_file_path": ""
+                  }
+              }
+          ]
+      }
+  ]
+}

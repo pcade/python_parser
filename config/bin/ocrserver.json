@@ -1,0 +1,26 @@
+{
+    "server": {
+        "port": 9977,
+        "log": "stdout"
+    },
+    "fileserver": {
+        "port": 9978,
+        "public_host": "*",
+        "public_port": 9978,
+        "send_timeout_ms": 3000,
+        "recv_timeout_ms": 3000
+    },
+    "ocr": {
+        "tessdata": "../etc/tessdata",
+        "tesslang": "eng+rus",
+        "cache": "./ocrcache",
+        "db_file": "./ocrcache/ocr.sqlite3",
+        "threads": 4,
+        "show_progress": false,
+        "show_lept": false
+    },
+    "tasks": {
+        "min_capacity": 2,
+        "max_capacity": 4
+    }
+}

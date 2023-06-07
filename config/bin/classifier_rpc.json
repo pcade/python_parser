@@ -1,0 +1,66 @@
+{
+    "id": "",
+    "log": {
+        "console": {
+            "level": 0,
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "file": {
+            "level": 2,
+            "max_index": 10,
+            "max_size": 10485760,
+            "name": "../log/classifier_rpc.log",
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "syslog": {
+            "facility": "user",
+            "host": "localhost",
+            "ident": "access",
+            "level": 0,
+            "pattern": "%m%n",
+            "port": 514
+        }
+    },
+    "name": "classifier_rpc",
+    "subsystems": [
+        {
+            "name": "classifier_rpc",
+            "properties": {
+                "acl_file": "../acl/classifier_rpc.acl.json",
+                "dbms_string": "$file{meta_string.property}",
+                "json_query_path": "../etc/query",
+                "metrics": "0.0.0.0:32607",
+                "notifiers_broker_uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)",
+                "notifiers_lm": "O1$$",
+                "plugins_dir": [ "./plugins/libfindquery_access", "./plugins/libfindquery_archive","./plugins/libfindquery_control","./plugins/libfindquery_doka_rpc"],
+                "template_file": "../etc/dynamic_classifiers/classifiers.json",
+                "threads": 10
+            },
+            "transport": [
+                {
+                    "lm": "O1$$",
+                    "queue": "CLASSIFIER_RPC_226",
+                    "threads": 10,
+                    "type": "broker",
+                    "uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)",
+                    "use": true
+                },
+                {
+                    "host": "0.0.0.0",
+                    "port": 22605,
+                    "threads": 10,
+                    "timeout": 30000,
+                    "type": "tcp",
+                    "use": true,
+                    "ssl" : {
+                        "use" : false,
+                        "cert_file_path": "",
+                        "key_file_path": "",
+                        "ca_file_path": ""
+                    }
+                }
+            ],
+            "type": "ClassifierServer"
+        }
+    ]
+}

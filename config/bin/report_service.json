@@ -1,0 +1,79 @@
+{
+  "id": "",
+  "log": {
+    "console": {
+      "level": 0,
+      "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-13c [%t] %m%n"
+    },
+    "file": {
+      "level": 2,
+      "max_index": 3,
+      "max_size": 1048576,
+      "name": "../log/report_service.log",
+      "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-13c [%t] %m%n"
+    },
+    "syslog": {
+      "facility": "user",
+      "host": "localhost",
+      "ident": "report_service-01",
+      "level": 0,
+      "pattern": "%m%n",
+      "port": 514
+    }
+  },
+  "name": "report_service",
+  "subsystems": [
+    {
+      "name": "report_service",
+      "properties": {
+        "cached_reports": [
+          {
+            "report_name": "tasks_list_on_control",
+            "period_type": "every-day",
+            "timestamp": "2000-01-01 18:15:00",
+            "part_owner": "24112017-0000-0000-0000-000000000010",
+            "begin_date": "2023-01-01"
+          }
+        ],
+        "dbms_string": "$file{meta_string.property}",
+        "json_query_path": "../etc/query",
+        "threads": 10,
+		"classifier": {
+          "path": [
+            "../etc/classifiers/global",
+            "../etc/classifiers/local",
+            "../etc/classifiers/system"
+          ],
+          "required": [
+            "subdivisions"
+          ]
+        },
+        "schema_name": "a150d13f-80f4-4a51-a7a5-4727a846743e",
+        "user_id": "f2ea693d-a16f-4fc6-93e7-cb4aaefc2550"
+      },
+      "transport": [
+        {
+          "lm": "O1$$",
+          "queue": "REPORT_SERVICE",
+          "threads": 10,
+          "type": "broker",
+          "uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)"
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 8842,
+          "threads": 10,
+          "timeout": 30000,
+          "type": "tcp",
+          "ssl": {
+            "use": false,
+            "cert_file_path": "",
+            "key_file_path": "",
+            "ca_file_path": ""
+          }
+        }
+      ],
+      "type": "ReportServiceServer"
+    }
+  ]
+}

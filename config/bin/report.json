@@ -1,0 +1,106 @@
+{
+  "id": "",
+  "log": {
+    "console": {
+      "level": 0,
+      "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+    },
+    "file": {
+      "level": 2,
+      "max_index": 10,
+      "max_size": 10485760,
+      "name": "../log/report.log",
+      "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+    },
+    "syslog": {
+      "facility": "user",
+      "host": "localhost",
+      "ident": "docstorage",
+      "level": 0,
+      "pattern": "%m%n",
+      "port": 514
+    }
+  },
+  "name": "report",
+  "subsystems": [
+    {
+      "name": "report",
+      "properties": {
+        "acl_file": "./config/report.acl.json",
+        "dbms_string": "$file{meta_string.property}",
+        "metrics": "0.0.0.0:32609",
+        "json_query_path": "../etc/query",
+        "plugins_dir": [
+          "./plugins/libfindquery_control",
+          "./plugins/libreports"
+        ],
+        "schemas_path": "../etc/schemas",
+        "threads": 10,
+        "classifier": {
+          "path": [
+            "../etc/classifiers/global",
+            "../etc/classifiers/local",
+            "../etc/classifiers/system"
+          ],
+          "required": [
+            "act_type",
+            "affair_status",
+            "code_execution",
+            "cont_card_change_history",
+            "cont_card_control_type",
+            "code_execution",
+            "cont_ini",
+            "cont_ini_ovu",
+            "control",
+            "control_exec_state",
+            "document_format",
+            "doka_doc_passport_grif",
+            "doka_doc_present_type",
+            "doka_document_priority",
+            "enquiry_mo",
+            "external_order_part_1",
+            "external_order_part_2",
+            "external_order_part_3",
+            "internal_order_part_1",
+            "internal_order_part_2",
+            "internal_order_part_3",
+            "posts",
+            "roles",
+            "special_control",
+            "subdivisions",
+            "subject",
+            "subject_general",
+            "types_of_instructions",
+            "users"
+          ]
+        },
+        "schema_name": "a150d13f-80f4-4a51-a7a5-4727a846743e"
+      },
+      "transport": [
+        {
+          "lm": "O1$$",
+          "queue": "REPORT_226",
+          "threads": 10,
+          "type": "broker",
+          "uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)",
+          "use": true
+        },
+        {
+          "host": "0.0.0.0",
+          "port": 22609,
+          "threads": 10,
+          "timeout": 30000,
+          "type": "tcp",
+          "use": true,
+          "ssl": {
+            "use": false,
+            "cert_file_path": "",
+            "key_file_path": "",
+            "ca_file_path": ""
+          }
+        }
+      ],
+      "type": "ReportServer"
+    }
+  ]
+}

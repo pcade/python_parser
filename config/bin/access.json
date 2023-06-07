@@ -1,0 +1,93 @@
+{
+    "id": "",
+    "log": {
+        "console": {
+            "level": 0,
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "file": {
+            "level": 2,
+            "max_index": 10,
+            "max_size": 10485760,
+            "name": "../log/access.log",
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "syslog": {
+            "facility": "user",
+            "host": "localhost",
+            "ident": "access",
+            "level": 0,
+            "pattern": "%m%n",
+            "port": 514
+        }
+    },
+    "name": "access",
+    "subsystems": [
+        {
+            "name": "access",
+            "properties": {
+                "acl_file": "../etc/acl/access.acl.json",
+                "abac_file": "../etc/acl/abac.access.json",
+                "dbms_string": "$file{meta_string.property}",
+                "find_query_path": "./plugins/libfindquery_access",
+                "json_query_path": "../etc/query",
+                "json_schema_path": "../etc/schemas",
+                "validate_by_schema": true,
+                "metrics": "0.0.0.0:32601",
+                "threads": 10,
+                "password_provider": {
+                    "path": "./plugins/libpasswordprovider_file",
+                    "properties": {
+                        "path": "../etc/acl/pwd.json"
+                    }
+                },
+                "classifier": {
+                    "path": [
+                        "../etc/classifiers/global",
+                        "../etc/classifiers/local",
+                        "../etc/classifiers/system"
+                    ],
+                    "required": [
+                        "users",
+                        "posts",
+                        "roles",
+                        "subdivisions"
+                    ]
+                }
+            },
+            "transport": [
+                {
+                    "lm": "O1$$",
+                    "queue": "ACCESS_226",
+                    "threads": 10,
+                    "type": "broker",
+                    "uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)",
+                    "use": true
+                },
+                {
+                    "host": "0.0.0.0",
+                    "port": 22601,
+                    "threads": 10,
+                    "timeout": 30000,
+                    "type": "tcp",
+                    "use": true,
+                    "ssl": {
+                        "use": false,
+                        "cert_file_path": "",
+                        "key_file_path": "",
+                        "ca_file_path": ""
+                    }
+                },
+                {
+                    "host": "0.0.0.0",
+                    "port": 9981,
+                    "threads": 10,
+                    "timeout": 30000,
+                    "type": "http",
+                    "use": false
+                }
+            ],
+            "type": "AccessServer"
+        }
+    ]
+}

@@ -1,0 +1,79 @@
+{
+  "id": "",
+  "name": "notifier",
+  "log": {
+      "console": {
+          "level": 6,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n"
+      },
+      "file": {
+          "level": 6,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n",
+          "name": "../log/notifier.log",
+          "max_size": 1048576,
+          "max_index": 3
+      },
+      "syslog": {
+          "level": 0,
+          "pattern": "%m%n",
+          "host": "localhost",
+          "port": 514,
+          "ident": "notifier",
+          "facility": "user"
+      }
+  },
+  "subsystems": [
+      {
+          "type": "swf::notifier::Server",
+          "name": "server",
+          "properties": {
+              "metrics": "0.0.0.0:32610",
+              "threads": 1,
+              "dbms_string": "$file{meta_string.property}",
+              "notifier": {
+                  "schema": "notifier",
+                  "connection_restore_timeout": 15,
+                  "poll_period": 1,
+                  "pg_notify": false,
+                  "trace": true,
+                  "directions": {
+                      "postgw": ["POSTGW_IN"]
+                  }
+              },
+              "distributors": [
+                  {
+                      "tag": "doka",
+                      "source": "DOKA_RPC_OUT",
+                      "destinations": ["POSTGW_IN"]
+                  }
+              ]
+          },
+          "transport": [
+              {
+                  "use": true,
+                  "type": "http",
+                  "host": "0.0.0.0",
+                  "port": 9988,
+                  "threads": 10,
+                  "timeout": 30000
+              },
+              {
+                  "use": false,
+                  "type": "broker",
+                  "queue": "NOTIFIER_RPC",
+                  "uri": "tcp://127.0.0.1:12345?transport.trace=false",
+                  "lm": "O1$$",
+                  "threads": 2
+              },
+              {
+                  "use": false,
+                  "type": "tcp",
+                  "host": "0.0.0.0",
+                  "port": 22613,
+                  "timeout": 30000,
+                  "threads": 2
+              }
+          ]
+      }
+  ]
+}

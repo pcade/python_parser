@@ -1,0 +1,51 @@
+{
+  "name": "cfg_rpc",
+  "log": {
+      "console": {
+          "level": 0,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n"
+      },
+      "file": {
+          "level": 2,
+          "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-24c [%t] %m%n",
+          "name": "cfg_rpc.log",
+          "max_size": 10485760,
+          "max_index": 10
+      },
+      "syslog": {
+          "level": 0,
+          "pattern": "%m%n",
+          "host": "localhost",
+          "port": 514,
+          "ident": "cfg_rpc",
+          "facility": "user"
+      }
+  },
+  "subsystems": [
+      {
+          "type": "swf::cfg::Server",
+          "name": "server",
+          "properties": {
+              "storage_path": "./cfg-rpc/storage",
+			  "http_port": 22612,
+			  "http_queue": 32,
+			  "http_threads": 1
+          },
+          "transport": [
+              {
+                  "type": "tcp",
+                  "host": "0.0.0.0",
+                  "port": 22611,
+                  "timeout": 30000,
+                  "threads": 10,
+                  "ssl" : {
+                      "use" : false,
+                      "cert_file_path": "",
+                      "key_file_path": "",
+                      "ca_file_path": ""
+                  }
+              }
+          ]
+      }
+  ]
+}

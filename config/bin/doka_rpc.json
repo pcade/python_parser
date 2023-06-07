@@ -1,0 +1,87 @@
+{
+    "id": "",
+    "log": {
+        "console": {
+            "level": 6,
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "file": {
+            "level": 2,
+            "max_index": 10,
+            "max_size": 10485760,
+            "name": "../log/doka_rpc.log",
+            "pattern": "%D{%d.%m.%Y %H:%M:%S.%q} %-5p %-30c [%t] %m%n"
+        },
+        "syslog": {
+            "facility": "user",
+            "host": "localhost",
+            "ident": "doka_rpc",
+            "level": 0,
+            "pattern": "%m%n",
+            "port": 514
+        }
+    },
+    "name": "doka_rpc",
+    "subsystems": [
+        {
+            "name": "doka_rpc",
+            "properties": {
+                "acl_file": "../etc/acl/doka_rpc.acl.json",
+                "dbms_string": "$file{meta_string.property}",
+                "find_query_path": "./plugins/libfindquery_doka_rpc",
+                "json_query_path": "../etc/query",
+				"classifier":{
+				  "path" : [ "../etc/classifiers/global","../etc/classifiers/local","../etc/classifiers/system"],
+                  "required" : [ "users", "posts", "roles", "subdivisions"]
+				},
+                "notifier": {
+                  "schema": "notifier",
+                  "connection_restore_timeout": 15,
+                  "poll_period": 1,
+                  "pg_notify": false,
+                  "trace": true,
+                  "directions": {
+                      "postgw": "DOKA_RPC_OUT"
+                  }
+                },
+				"json_schema_path" : "../etc/schema",
+                "metrics": "0.0.0.0:32604",
+                "threads": 10,
+				"circuit" : ""
+            },
+            "transport": [
+                {
+                    "lm": "O1$$",
+                    "queue": "DOKA_RPC_226",
+                    "threads": 10,
+                    "type": "broker",
+                    "uri": "failover:(tcp://127.0.0.1:12345?transport.trace=false)",
+                    "use": true
+                },
+                {
+                    "host": "0.0.0.0",
+                    "port": 22604,
+                    "threads": 10,
+                    "timeout": 30000,
+                    "type": "tcp",
+                    "use": true,
+                    "ssl" : {
+                        "use" : false,
+                        "cert_file_path": "",
+                        "key_file_path": "",
+                        "ca_file_path": ""
+                    }
+                },
+                {
+                    "host": "0.0.0.0",
+                    "port": 9980,
+                    "threads": 10,
+                    "timeout": 30000,
+                    "type": "http",
+                    "use": false
+                }
+            ],
+            "type": "DokaServer"
+        }
+    ]
+}
